@@ -234,7 +234,7 @@ void MotionControllerDriver::read(double& position, double& velocity)
   velocity = mc_driver_->get_speed();
 }
 
-bool MotionControllerDriver::write(double& target)
+bool MotionControllerDriver::write(double target)
 {
   if (active.load())
   {

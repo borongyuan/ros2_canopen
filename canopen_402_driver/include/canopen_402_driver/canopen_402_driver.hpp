@@ -78,7 +78,7 @@ public:
 
   void read(double& position, double& velocity);
 
-  bool write(double& target);
+  bool write(double target);
 
 protected:
   virtual void on_rpdo(COData data) override

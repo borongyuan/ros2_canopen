@@ -180,7 +180,10 @@ return_type CIA402System::read()
 {
   for (size_t i = 0; i < info_.joints.size(); i++)
   {
-    drivers_[i]->read(hw_states_positions_[i], hw_states_velocities_[i]);
+    double position, velocity;
+    drivers_[i]->read(position, velocity);
+    hw_states_positions_[i] = position * pos_from_device_[i];
+    hw_states_velocities_[i] = velocity * vel_from_device_[i];
   }
 
   return return_type::OK;
@@ -193,13 +196,13 @@ return_type CIA402System::write()
     switch (control_level_[i])
     {
       case integration_level_t::POSITION:
-        if (!drivers_[i]->write(hw_commands_positions_[i]))
+        if (!drivers_[i]->write(hw_commands_positions_[i] * pos_to_device_[i]))
         {
           return return_type::ERROR;
         }
         break;
       case integration_level_t::VELOCITY:
-        if (!drivers_[i]->write(hw_commands_velocities_[i]))
+        if (!drivers_[i]->write(hw_commands_velocities_[i] * vel_to_device_[i]))
         {
           return return_type::ERROR;
         }
@@ -226,6 +229,10 @@ void CIA402System::initDeviceManager()
     {
       drivers_.emplace_back(std::static_pointer_cast<ros2_canopen::MotionControllerDriver>(
           device_manager_->get_node(std::stoi(joint.parameters.at("node_id")))));
+      pos_to_device_.emplace_back(std::stod(joint.parameters.at("pos_to_device")));
+      pos_from_device_.emplace_back(std::stod(joint.parameters.at("pos_from_device")));
+      vel_to_device_.emplace_back(std::stod(joint.parameters.at("vel_to_device")));
+      vel_from_device_.emplace_back(std::stod(joint.parameters.at("vel_from_device")));
     }
     RCLCPP_INFO(device_manager_->get_logger(), "Initialisation successful.");
   }

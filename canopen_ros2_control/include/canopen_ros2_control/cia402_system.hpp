@@ -55,6 +55,11 @@ private:
 
   std::vector<integration_level_t> control_level_;
 
+  std::vector<double> pos_to_device_;
+  std::vector<double> pos_from_device_;
+  std::vector<double> vel_to_device_;
+  std::vector<double> vel_from_device_;
+
   std::vector<double> hw_commands_positions_;
   std::vector<double> hw_commands_velocities_;
   std::vector<double> hw_states_positions_;
